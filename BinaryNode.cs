@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node2
 {
     class BinaryNode<T>
     {
@@ -17,26 +17,48 @@ namespace binary_node1
             LeftChild = null;
             RightChild = null;
         }
-        public void AddLeft(BinaryNode<T> _left)
+        public void AddLeft(BinaryNode<T>? _left)
         {
             LeftChild = _left;
         }
-        public void AddRight(BinaryNode<T> _right)
+        public void AddRight(BinaryNode<T>? _right)
         {
             RightChild = _right;
         }
         public override string ToString()
         {
-            return Value.ToString() + ": " + (LeftChild == null ? "null" : LeftChild.Value.ToString()) + " " + (RightChild == null ? "null" : RightChild.Value.ToString());
+            return ToString("");
         }
-        public static void Output(BinaryNode<T> _tree)
+        public string ToString(string spaces)
         {
-            if (_tree != null)
+            string result = spaces + Value.ToString() + ":\n";
+            if (LeftChild != null && RightChild != null)
             {
-                Console.WriteLine(_tree.ToString());
-                Output(_tree.LeftChild);
-                Output(_tree.RightChild);
+                string resultLeft = LeftChild.ToString(spaces + "  ");
+                string resultRight = RightChild.ToString(spaces + "  ");
+
+                result += resultLeft+resultRight;
             }
+            else if(LeftChild == null && RightChild != null)
+            {
+                string resultLeft = spaces + "  " + "None\n";
+                string resultRight = RightChild.ToString(spaces + "  ");
+
+                result += resultLeft + resultRight;
+            }
+            else if (LeftChild != null && RightChild == null)
+            {
+                string resultRight = spaces + "  " + "None\n";
+                string resultLeft = LeftChild.ToString(spaces + "  ");
+
+                result += resultLeft + resultRight;
+            }
+            else if (LeftChild == null && RightChild == null)
+            {
+               
+            }
+
+            return result;
         }
     }
 }

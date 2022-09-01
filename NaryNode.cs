@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node2
 {
     class NaryNode<T>
     {
@@ -21,22 +21,18 @@ namespace binary_node1
         }
         public override string ToString()
         {
-            string result = Value.ToString() + ":";
+            return ToString("");
+        }
+        public string ToString(string spaces)
+        {
+            string result = spaces + Value.ToString() + ":\n" ;
             
             for (int child = 0; child < Children.Count; child++)
             {
-                result += " " + Children[child].Value.ToString();
+                result += Children[child].ToString(spaces+"  ");
             }
             
             return result;
-        }
-        public static void Output(NaryNode<T> _tree)
-        {
-            Console.WriteLine(_tree.ToString());
-            for (int child = 0; child < _tree.Children.Count; child++)
-            {
-                Output(_tree.Children[child]);
-            }
         }
     }
 }

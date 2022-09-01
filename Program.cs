@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node2
 {
     class Program
     {
@@ -27,17 +27,9 @@ namespace binary_node1
             B_1.AddRight(E_1);
             E_1.AddLeft(F_1);
             
-            Console.WriteLine("Recursive BinaryNode Output:\n");
-            BinaryNode<string>.Output(Root_1);
-
-            Console.WriteLine("\nDirect BinaryNodes Output:\n");
-            Console.WriteLine(Root_1.ToString());
-            Console.WriteLine(A_1.ToString());
-            Console.WriteLine(B_1.ToString());
-            Console.WriteLine(C_1.ToString());
-            Console.WriteLine(D_1.ToString());
-            Console.WriteLine(E_1.ToString());
-            Console.WriteLine(F_1.ToString());
+            Console.WriteLine("\nBinaryNodes Output:\n");
+            Console.WriteLine(Root_1);
+            Console.WriteLine(A_1);
 
             // Nary Nodes
 
@@ -62,20 +54,9 @@ namespace binary_node1
             F_2.AddChild(H_2);
             F_2.AddChild(I_2);
 
-            Console.WriteLine("\nRecursive NaryNode Output:\n");
-            NaryNode<string>.Output(Root_2);
-
-            Console.WriteLine("\nDirect NaryNodes Output:\n");
-            Console.WriteLine(Root_2.ToString());
-            Console.WriteLine(A_2.ToString());
-            Console.WriteLine(B_2.ToString());
-            Console.WriteLine(C_2.ToString());
-            Console.WriteLine(D_2.ToString());
-            Console.WriteLine(E_2.ToString());
-            Console.WriteLine(F_2.ToString());
-            Console.WriteLine(G_2.ToString());
-            Console.WriteLine(H_2.ToString());
-            Console.WriteLine(I_2.ToString());
+            Console.WriteLine("\nNaryNodes Output:\n");
+            Console.WriteLine(Root_2);
+            Console.WriteLine(A_2);
             
             Console.ReadLine();
         }
