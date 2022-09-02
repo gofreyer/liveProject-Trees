@@ -17,11 +17,11 @@ namespace binary_node2
             LeftChild = null;
             RightChild = null;
         }
-        public void AddLeft(BinaryNode<T>? _left)
+        public void AddLeft(BinaryNode<T> _left)
         {
             LeftChild = _left;
         }
-        public void AddRight(BinaryNode<T>? _right)
+        public void AddRight(BinaryNode<T> _right)
         {
             RightChild = _right;
         }
