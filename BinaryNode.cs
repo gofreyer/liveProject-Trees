@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node2
 {
     class BinaryNode<T>
     {
@@ -27,16 +27,64 @@ namespace binary_node1
         }
         public override string ToString()
         {
-            return Value.ToString() + ": " + (LeftChild == null ? "null" : LeftChild.Value.ToString()) + " " + (RightChild == null ? "null" : RightChild.Value.ToString());
+            return ToString("");
         }
-        public static void Output(BinaryNode<T> _tree)
+        public string ToString(string spaces)
         {
-            if (_tree != null)
+            string result = spaces + Value.ToString() + ":\n";
+            if (LeftChild != null && RightChild != null)
             {
-                Console.WriteLine(_tree.ToString());
-                Output(_tree.LeftChild);
-                Output(_tree.RightChild);
+                string resultLeft = LeftChild.ToString(spaces + "  ");
+                string resultRight = RightChild.ToString(spaces + "  ");
+
+                result += resultLeft+resultRight;
             }
+            else if(LeftChild == null && RightChild != null)
+            {
+                string resultLeft = spaces + "  " + "None\n";
+                string resultRight = RightChild.ToString(spaces + "  ");
+
+                result += resultLeft + resultRight;
+            }
+            else if (LeftChild != null && RightChild == null)
+            {
+                string resultRight = spaces + "  " + "None\n";
+                string resultLeft = LeftChild.ToString(spaces + "  ");
+
+                result += resultLeft + resultRight;
+            }
+            else if (LeftChild == null && RightChild == null)
+            {
+               
+            }
+
+            return result;
+        }
+
+        public BinaryNode<T> FindNode(T _searchvalue)
+        {
+            if (Value.Equals(_searchvalue))
+            {
+                return this;
+            }
+            if (LeftChild != null)
+            {
+                BinaryNode<T> LeftFound = LeftChild.FindNode(_searchvalue);
+                if (LeftFound != null)
+                {
+                    return LeftFound;
+                }
+            }
+            if (RightChild != null)
+            {
+                BinaryNode<T> RightFound = RightChild.FindNode(_searchvalue);
+                if (RightFound != null)
+                {
+                    return RightFound;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -4,10 +4,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node2
 {
     class Program
     {
+        public static void FindValue(BinaryNode<string> _binnode, string _searchvalue)
+        {
+            BinaryNode<string> foundNode = _binnode.FindNode(_searchvalue);
+            if (foundNode != null)
+            {
+                Console.WriteLine($"Found {foundNode.Value}");
+            }
+            else
+            {
+                Console.WriteLine($"Value {_searchvalue} not found");
+            }
+            
+        }
+        public static void FindValue(NaryNode<string> _nnode, string _searchvalue)
+        {
+            NaryNode<string> foundNode = _nnode.FindNode(_searchvalue);
+            if (foundNode != null)
+            {
+                Console.WriteLine($"Found {foundNode.Value}");
+            }
+            else
+            {
+                Console.WriteLine($"Value {_searchvalue} not found");
+            }
+        }
         static void Main(string[] args)
         {
             // Binary Nodes
@@ -26,18 +51,23 @@ namespace binary_node1
             A_1.AddRight(D_1);
             B_1.AddRight(E_1);
             E_1.AddLeft(F_1);
-            
-            Console.WriteLine("Recursive BinaryNode Output:\n");
-            BinaryNode<string>.Output(Root_1);
 
-            Console.WriteLine("\nDirect BinaryNodes Output:\n");
-            Console.WriteLine(Root_1.ToString());
-            Console.WriteLine(A_1.ToString());
-            Console.WriteLine(B_1.ToString());
-            Console.WriteLine(C_1.ToString());
-            Console.WriteLine(D_1.ToString());
-            Console.WriteLine(E_1.ToString());
-            Console.WriteLine(F_1.ToString());
+            /*
+            Console.WriteLine("\nBinaryNodes Output:\n");
+            Console.WriteLine(Root_1);
+            Console.WriteLine(A_1);
+            */
+
+            Console.WriteLine("\nFind BinaryNode:\n");
+            // Find some values.
+            FindValue(Root_1, "Root");
+            FindValue(Root_1, "E");
+            FindValue(Root_1, "F");
+            FindValue(Root_1, "Q");
+
+            // Find F in the B subtree.
+            FindValue(B_1, "F");
+
 
             // Nary Nodes
 
@@ -62,21 +92,22 @@ namespace binary_node1
             F_2.AddChild(H_2);
             F_2.AddChild(I_2);
 
-            Console.WriteLine("\nRecursive NaryNode Output:\n");
-            NaryNode<string>.Output(Root_2);
+            /*
+            Console.WriteLine("\nNaryNodes Output:\n");
+            Console.WriteLine(Root_2);
+            Console.WriteLine(A_2);
+            */
 
-            Console.WriteLine("\nDirect NaryNodes Output:\n");
-            Console.WriteLine(Root_2.ToString());
-            Console.WriteLine(A_2.ToString());
-            Console.WriteLine(B_2.ToString());
-            Console.WriteLine(C_2.ToString());
-            Console.WriteLine(D_2.ToString());
-            Console.WriteLine(E_2.ToString());
-            Console.WriteLine(F_2.ToString());
-            Console.WriteLine(G_2.ToString());
-            Console.WriteLine(H_2.ToString());
-            Console.WriteLine(I_2.ToString());
-            
+            Console.WriteLine("\nFind NaryNode:\n");
+            // Find some values.
+            FindValue(Root_2, "Root");
+            FindValue(Root_2, "E");
+            FindValue(Root_2, "F");
+            FindValue(Root_2, "Q");
+
+            // Find F in the C subtree.
+            FindValue(C_2, "F");
+
             Console.ReadLine();
         }
     }
