@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace binary_node1
+namespace binary_node4
 {
     class NaryNode<T>
     {
@@ -21,22 +21,74 @@ namespace binary_node1
         }
         public override string ToString()
         {
-            string result = Value.ToString() + ":";
+            return ToString("");
+        }
+        public string ToString(string spaces)
+        {
+            string result = spaces + Value.ToString() + ":\n" ;
             
             for (int child = 0; child < Children.Count; child++)
             {
-                result += " " + Children[child].Value.ToString();
+                result += Children[child].ToString(spaces+"  ");
             }
             
             return result;
         }
-        public static void Output(NaryNode<T> _tree)
+
+        public NaryNode<T> FindNode(T _searchvalue)
         {
-            Console.WriteLine(_tree.ToString());
-            for (int child = 0; child < _tree.Children.Count; child++)
+            if (Value.Equals(_searchvalue))
             {
-                Output(_tree.Children[child]);
+                return this;
             }
+
+            for (int child = 0; child < Children.Count; child++)
+            {
+                NaryNode<T> ChildFound = Children[child].FindNode(_searchvalue);
+                if (ChildFound != null)
+                {
+                    return ChildFound;
+                }
+            }
+
+            return null;
+        }
+        public List<NaryNode<T>> TraversePreorder()
+        {
+            List<NaryNode<T>> result = new List<NaryNode<T>>();
+            result.Add(this);
+            for (int child = 0; child < Children.Count; child++)
+            {
+                result.AddRange(Children[child].TraversePreorder());
+            }
+            return result;
+        }
+        public List<NaryNode<T>> TraversePostorder()
+        {
+            List<NaryNode<T>> result = new List<NaryNode<T>>();
+            for (int child = 0; child < Children.Count; child++)
+            {
+                result.AddRange(Children[child].TraversePostorder());
+            }
+            result.Add(this);
+            return result;
+        }
+        public List<NaryNode<T>> TraverseBreadthFirst()
+        {
+            List<NaryNode<T>> result = new List<NaryNode<T>>();
+            Queue<NaryNode<T>> queue = new Queue<NaryNode<T>>();
+            NaryNode<T> item = null;
+            queue.Enqueue(this);
+            while (queue.Count > 0)
+            {
+                item = queue.Dequeue();
+                result.Add(item);
+                for (int child = 0; child < item.Children.Count; child++)
+                {
+                    queue.Enqueue(item.Children[child]);
+                }
+            }
+            return result;
         }
     }
 }
