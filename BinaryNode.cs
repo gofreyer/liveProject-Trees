@@ -2,41 +2,400 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace binary_node1
+using System.Windows;
+using System.Windows.Shapes;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+namespace sorted_binary_node1
 {
-    class BinaryNode<T>
+    internal class SortedBinaryNode<T> where T : IComparable<T>
     {
-        public T Value { get; set; }
-        public BinaryNode<T> LeftChild { get; set; }
-        public BinaryNode<T> RightChild { get; set; }
-        public BinaryNode(T _value)
+        internal T Value { get; set; }
+        internal SortedBinaryNode<T> LeftChild, RightChild;
+
+        // Size and position values.
+        private const double NODE_RADIUS = 10;  // Radius of a node’s circle
+        private const double X_SPACING = 20;    // Horizontal distance between neighboring subtrees
+        private const double Y_SPACING = 20;    // Horizontal distance between parent and child subtree
+        internal Point Center { get; private set; }
+        internal Rect SubtreeBounds { get; private set; }
+
+        internal SortedBinaryNode(T value)
         {
-            Value = _value;
+            Value = value;
             LeftChild = null;
             RightChild = null;
         }
-        public void AddLeft(BinaryNode<T> _left)
+
+        internal void AddLeft(SortedBinaryNode<T> child)
         {
-            LeftChild = _left;
+            LeftChild = child;
         }
-        public void AddRight(BinaryNode<T> _right)
+
+        internal void AddRight(SortedBinaryNode<T> child)
         {
-            RightChild = _right;
+            RightChild = child;
         }
+
+        internal void AddNode(T newValue)
+        {
+            if (Value.CompareTo(newValue) == 0)
+            {
+                throw new ArgumentException(String.Format("The new value {0} is already in the tree.", newValue),"newValue");
+            }
+            else if (Value.CompareTo(newValue) < 0)
+            {
+                if (RightChild == null)
+                {
+                    SortedBinaryNode<T> child = new SortedBinaryNode<T>(newValue);
+                    AddRight(child);
+                }
+                else
+                {
+                    RightChild.AddNode(newValue);
+                }
+            }
+            else if (Value.CompareTo(newValue) > 0)
+            {
+                if (LeftChild == null)
+                {
+                    SortedBinaryNode<T> child = new SortedBinaryNode<T>(newValue);
+                    AddLeft(child);
+                }
+                else
+                {
+                    LeftChild.AddNode(newValue);
+                }
+            }
+        }
+
+        // Return an indented string representation of the node and its children.
         public override string ToString()
         {
-            return Value.ToString() + ": " + (LeftChild == null ? "null" : LeftChild.Value.ToString()) + " " + (RightChild == null ? "null" : RightChild.Value.ToString());
+            return ToString("");
         }
-        public static void Output(BinaryNode<T> _tree)
+
+        // Recursively create a string representation of this node's subtree.
+        // Display this value indented, followed by the left and right
+        // values indented one more level.
+        // End in a newline.
+        public string ToString(string spaces)
         {
-            if (_tree != null)
+            // Create a string named result that initially holds the
+            // current node's value followed by a new line.
+            string result = string.Format("{0}{1}:\n", spaces, Value);
+
+            // See if the node has any children.
+            if ((LeftChild != null) || (RightChild != null))
             {
-                Console.WriteLine(_tree.ToString());
-                Output(_tree.LeftChild);
-                Output(_tree.RightChild);
+                // Add null or the child's value.
+                if (LeftChild == null)
+                    result += string.Format("{0}{1}null\n", spaces, "  ");
+                else
+                    result += LeftChild.ToString(spaces + "  ");
+
+                // Add null or the child's value.
+                if (RightChild == null)
+                    result += string.Format("{0}{1}null\n", spaces, "  ");
+                else
+                    result += RightChild.ToString(spaces + "  ");
             }
+            return result;
+        }
+
+        // Recursively search this node's subtree looking for the target value.
+        // Return the node that contains the value or null.
+        internal SortedBinaryNode<T> FindNode(T target)
+        {
+            if (Value.CompareTo(target) == 0)
+            {
+                return this;
+            }
+
+            SortedBinaryNode<T> result = null;
+            if (Value.CompareTo(target) < 0)
+            {
+                if (RightChild != null)
+                {
+                    result = RightChild.FindNode(target);
+                }
+                if (result != null) return result;
+            }
+            else if (Value.CompareTo(target) > 0)
+            {
+                if (LeftChild != null)
+                {
+                    result = LeftChild.FindNode(target);
+                }
+                if (result != null) return result;
+            }
+            return null;
+        }
+        internal SortedBinaryNode<T> FindMinNode(SortedBinaryNode<T> node)
+        {
+            SortedBinaryNode <T> current = node;
+  
+            while (current!=null && current.LeftChild != null)
+            {
+                current = current.LeftChild;
+            }
+            return current;
+        }
+        internal SortedBinaryNode<T> FindMaxNode(SortedBinaryNode<T> node)
+        {
+            SortedBinaryNode<T> current = node;
+
+            while (current != null && current.RightChild != null)
+            {
+                current = current.RightChild;
+            }
+            return current;
+        }
+        internal void RemoveNode(T target)
+        {
+            SortedBinaryNode<T> newRoot = RemoveNode(this, target);
+            if (newRoot != null)
+            {
+                Value = newRoot.Value;
+                LeftChild = newRoot.LeftChild;
+                RightChild = newRoot.RightChild;
+            }
+            else
+            {
+                throw new ArgumentException(String.Format("The removing of target value {0} would destroy the tree.", target), "target");
+            }
+        }
+        internal SortedBinaryNode<T> RemoveNode(SortedBinaryNode<T> parent, T target)
+        {
+            if (parent == null) return null;
+            if (parent.Value.CompareTo(target) < 0 && RightChild == null)
+            {
+                throw new ArgumentException(String.Format("The target value {0} is not in the tree.", target), "target");
+            }
+            else if (parent.Value.CompareTo(target) < 0)
+            {
+                parent.RightChild = RemoveNode(parent.RightChild, target);
+            }
+            else if (Value.CompareTo(target) > 0 && LeftChild == null)
+            {
+                throw new ArgumentException(String.Format("The target value {0} is not in the tree.", target), "target");
+            }
+            else if (parent.Value.CompareTo(target) > 0)
+            {
+                parent.LeftChild = RemoveNode(parent.LeftChild, target);
+            }
+            else if(parent.Value.CompareTo(target) == 0)
+            {
+                if (parent.LeftChild == null && parent.RightChild == null)
+                {
+                    return null;
+                }
+                else if (parent.LeftChild == null)
+                {
+                    return parent.RightChild;
+                }
+                else if (parent.RightChild == null)
+                {
+                    return parent.LeftChild;
+                }
+                SortedBinaryNode<T> max = FindMaxNode(parent.LeftChild);
+                parent.Value = max.Value;
+                parent.LeftChild = RemoveNode(parent.LeftChild, max.Value);
+            }
+
+            return parent;
+        }
+        internal List<SortedBinaryNode<T>> TraversePreorder()
+        {
+            List<SortedBinaryNode<T>> result = new List<SortedBinaryNode<T>>();
+
+            // Add this node to the traversal.
+            result.Add(this);
+
+            // Add the child subtrees.
+            if (LeftChild != null) result.AddRange(LeftChild.TraversePreorder());
+            if (RightChild != null) result.AddRange(RightChild.TraversePreorder());
+            return result;
+        }
+
+        internal List<SortedBinaryNode<T>> TraverseInorder()
+        {
+            List<SortedBinaryNode<T>> result = new List<SortedBinaryNode<T>>();
+
+            // Add the left subtree.
+            if (LeftChild != null) result.AddRange(LeftChild.TraverseInorder());
+
+            // Add this node.
+            result.Add(this);
+
+            // Add the right subtree.
+            if (RightChild != null) result.AddRange(RightChild.TraverseInorder());
+            return result;
+        }
+
+        internal List<SortedBinaryNode<T>> TraversePostorder()
+        {
+            List<SortedBinaryNode<T>> result = new List<SortedBinaryNode<T>>();
+
+            // Add the child subtrees.
+            if (LeftChild != null) result.AddRange(LeftChild.TraversePostorder());
+            if (RightChild != null) result.AddRange(RightChild.TraversePostorder());
+
+            // Add this node.
+            result.Add(this);
+            return result;
+        }
+
+        internal List<SortedBinaryNode<T>> TraverseBreadthFirst()
+        {
+            List<SortedBinaryNode<T>> result = new List<SortedBinaryNode<T>>();
+            Queue<SortedBinaryNode<T>> queue = new Queue<SortedBinaryNode<T>>();
+
+            // Start with the top node in the queue.
+            queue.Enqueue(this);
+            while (queue.Count > 0)
+            {
+                // Remove the top node from the queue and
+                // add it to the result list.
+                SortedBinaryNode<T> node = queue.Dequeue();
+                result.Add(node);
+
+                // Add the node's children to the queue.
+                if (node.LeftChild != null) queue.Enqueue(node.LeftChild);
+                if (node.RightChild != null) queue.Enqueue(node.RightChild);
+            }
+
+            return result;
+        }
+
+        // Position the node's subtree.
+        private void ArrangeSubtree(double xmin, double ymin)
+        {
+            // Calculate cy, the Y coordinate for this node.
+            // This doesn't depend on the children.
+            double cy = ymin + NODE_RADIUS;
+
+            // If the node has no children, just place it here and return.
+            if ((LeftChild == null) && (RightChild == null))
+            {
+                double cx = xmin + NODE_RADIUS;
+                Center = new Point(cx, cy);
+                SubtreeBounds = new Rect(xmin, ymin, 2 * NODE_RADIUS, 2 * NODE_RADIUS);
+                return;
+            }
+
+            // Set child_xmin and child_ymin to the
+            // start position for child subtrees.
+            double childXmin = xmin;
+            double childYmin = ymin + 2 * NODE_RADIUS + Y_SPACING;
+
+            // Position the child subtrees.
+            if (LeftChild != null)
+            {
+                // Arrange the left child subtree and update
+                // child_xmin to allow room for its subtree.
+                LeftChild.ArrangeSubtree(childXmin, childYmin);
+                childXmin = LeftChild.SubtreeBounds.Right;
+
+                // If we also have a right child,
+                // add space between their subtrees.
+                if (RightChild != null) childXmin += X_SPACING;
+            }
+
+            if (RightChild != null)
+            {
+                // Arrange the right child subtree.
+                RightChild.ArrangeSubtree(childXmin, childYmin);
+            }
+
+            // Arrange this node depending on the number of children.
+            if ((LeftChild != null) && (RightChild != null))
+            {
+                // Two children. Center this node over the child nodes.
+                // Use the subtree bounds to set our subtree bounds.
+                double cx = (LeftChild.Center.X + RightChild.Center.X) / 2;
+                Center = new Point(cx, cy);
+                double xmax = RightChild.SubtreeBounds.Right;
+                double ymax = Math.Max(LeftChild.SubtreeBounds.Bottom, RightChild.SubtreeBounds.Bottom);
+                SubtreeBounds = new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
+            }
+            else if (LeftChild != null)
+            {
+                // We have only a left child.
+                double cx = LeftChild.Center.X;
+                Center = new Point(cx, cy);
+                double xmax = LeftChild.SubtreeBounds.Right;
+                double ymax = LeftChild.SubtreeBounds.Bottom;
+                SubtreeBounds = new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
+            }
+            else
+            {
+                // We have only a right child.
+                double cx = RightChild.Center.X;
+                Center = new Point(cx, cy);
+                double xmax = RightChild.SubtreeBounds.Right;
+                double ymax = RightChild.SubtreeBounds.Bottom;
+                SubtreeBounds = new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
+            }
+        }
+
+        // Draw the subtree's links.
+        private void DrawSubtreeLinks(Canvas canvas)
+        {
+            // Draw the subtree's links.
+            if (LeftChild != null)
+            {
+                LeftChild.DrawSubtreeLinks(canvas);
+                canvas.DrawLine(Center, LeftChild.Center, Brushes.Black, 1);
+            }
+
+            if (RightChild != null)
+            {
+                RightChild.DrawSubtreeLinks(canvas);
+                canvas.DrawLine(Center, RightChild.Center, Brushes.Black, 1);
+            }
+
+            // Outline the subtree for debugging.
+            //canvas.DrawRectangle(SubtreeBounds, null, Brushes.Red, 1);
+        }
+
+        // Draw the subtree's nodes.
+        private void DrawSubtreeNodes(Canvas canvas)
+        {
+            // Draw the node.
+            double x0 = Center.X - NODE_RADIUS;
+            double y0 = Center.Y - NODE_RADIUS;
+            Rect rect = new Rect(
+                Center.X - NODE_RADIUS,
+                Center.Y - NODE_RADIUS,
+                2 * NODE_RADIUS,
+                2 * NODE_RADIUS);
+            canvas.DrawEllipse(rect, Brushes.Yellow, Brushes.Blue, 1);
+
+            Label label = canvas.DrawLabel(
+                rect, Value, null, Brushes.Red,
+                HorizontalAlignment.Center,
+                VerticalAlignment.Center,
+                12, 0);
+
+            // Draw the descendants' nodes.
+            if (LeftChild != null) LeftChild.DrawSubtreeNodes(canvas);
+            if (RightChild != null) RightChild.DrawSubtreeNodes(canvas);
+        }
+
+        // Position and draw the subtree.
+        public void ArrangeAndDrawSubtree(Canvas canvas, double xmin, double ymin)
+        {
+            // Position the tree.
+            ArrangeSubtree(xmin, ymin);
+
+            // Draw the links.
+            DrawSubtreeLinks(canvas);
+
+            // Draw the nodes.
+            DrawSubtreeNodes(canvas);
         }
     }
 }
